@@ -1,0 +1,45 @@
+@startuml Delivery versus Payment
+!include style.puml
+
+skinparam BoxPadding 10
+
+title Ripple CBDC CHallenge
+title User Story 2: Delivery versus Payment
+
+autonumber
+actor "Trusted Contract Creator" as TCC
+actor "Seller" as S
+actor "Buyer" as B
+box "Backend"
+  participant "Oracle Node" as ON
+  participant "Signing Enclave" as SE
+  participant "Execution Enclave" as EE
+end box
+participant "XRPL" as XRPL
+
+group Agree on price
+S <-> B: Agree on an XRP denominated \nprice for the token
+S -> TCC: Share agreed price
+B -> TCC: Share agreed price
+end
+
+group Sender sends token to escrow account
+S -> XRPL: Send token asset to Escrow Account wallet address
+ON -> ON: Detects transaction of token to Escrow Account wallet address
+ON -> EE: Informs about the token asset transaction, and Execution Enclave \nsecurely stores and seals this information. 
+end
+
+group Buyer sends XRP to escrow account
+B -> XRPL: Send XRP to Escrow Account wallet address
+ON -> ON: Detects transaction of XRP to Escrow Account wallet address
+ON -> EE: Informs about the XRP payment transaction, and the Sender wallet address it's for.
+end
+
+group Trusted Contract
+EE -> EE: Verifies that a token asset has been received for the Buyer.
+EE -> EE: Constructs two signed transactions signed by Escrow Account.
+EE -> ON: Send two signed transactions.
+ON -> XRPL: Submit both transactions to the Ripple ledger.
+end 
+
+@enduml

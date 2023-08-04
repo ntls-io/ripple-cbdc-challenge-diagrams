@@ -1,0 +1,26 @@
+@startuml Create Trusted Contract
+!include style.puml
+
+skinparam BoxPadding 10
+
+title Ripple CBDC CHallenge
+title User Story 1: Create Trusted Contract
+
+autonumber
+actor "Trusted Contract Creator" as TCC
+box "Frontend"
+  participant "Orchestration Service" as OS
+end box
+box "Backend"
+  participant "Oracle Node" as ON
+  participant "Signing Enclave" as SE
+end box
+
+TCC -> OS: Create Escrow Account
+OS -> ON: Initiate Create Escrow Account Flow
+ON -> SE: Create XRPL wallet
+SE --> ON: Return newly created wallet address of Escrow Account
+ON -> ON: Add wallet address to list of monitored addresses
+ON --> OS: Return Escrow Account wallet address
+OS --> TCC: Display newly created wallet address
+@enduml
